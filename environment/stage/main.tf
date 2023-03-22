@@ -87,7 +87,7 @@ module "vpc" {
 ################################################################################
 
 module "vpc_endpoints" {
-  source = "../../modules/vpc/vpc-endpoints"
+  source = "../../modules/vpc/vpc-endpoint"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [data.aws_security_group.default.id]
@@ -181,7 +181,7 @@ module "vpc_endpoints" {
 }
 
 module "vpc_endpoints_nocreate" {
-  source = "../../modules/vpc/vpc-endpoints"
+  source = "../../modules/vpc/vpc-endpoint"
 
   create = false
 }
@@ -250,3 +250,74 @@ resource "aws_security_group" "vpc_tls" {
 
   tags = local.tags
 }
+
+################################################################################
+# module codecommit
+################################################################################
+module "codecommit" {
+
+  source = "../../modules/codecommit"
+
+  repository_name = "codecommit-repo"
+  description     = "Git repositoriy in AWS"
+  default_branch  = "master"
+
+  triggers = [
+    {
+      name            = "all"
+      events          = ["all"]
+      destination_arn = "arn:aws:lambda:eu-west-2-1:731683486315:function:lambda-all"
+    },
+    {
+      name            = "updateReference"
+      events          = ["updateReference"]
+      destination_arn = "arn:aws:lambda:eu-west-2:731683486315:function:lambda-updateReference"
+    },
+  ]
+
+  tags = {
+    Owner       = "DevOps team"
+    Environment = "stage"
+    Terraform   = true
+  }
+
+}
+
+#####################################################################################
+# module Codebuild
+#####################################################################################
+
+/* terraform {
+  required_version = ">= 1.0.0"
+  backend "remote" {}
+} */
+
+/* module "codebuild" {
+  source                 = "../../modules/codebuild"
+  build_image            = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+  build_spec_file        = var.build_spec_file
+  compute_type           = "BUILD_GENERAL1_MEDIUM"
+  environment            = var.environment
+  git_clone_depth        = "1"
+  http_git_clone_url     = "https://github.com/aws-ia/terraform-modules-examples"
+  project_name           = var.project_name
+  codebuild_env_vars     = var.codebuild_env_vars
+  create_role_and_policy = true
+  tags                   = merge(var.tags, module.repo_label.tags)
+}
+
+######################################
+# codebuild AWS Label 
+########################################
+
+module "repo_label" {
+  source    = "aws-ia/label/aws"
+  version   = "0.0.2"
+  region    = var.region
+  namespace = "aws-ia"
+  account   = "t"
+  env       = "d"
+  name      = "cb"
+  delimiter = "-"
+  tags      = tomap({ propogate_at_launch = "true", "terraform" = "true" })
+} */

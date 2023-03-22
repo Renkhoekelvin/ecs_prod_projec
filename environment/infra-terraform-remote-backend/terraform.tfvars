@@ -6,7 +6,7 @@ role_name    = "Admin"
 profile_name = "aws-demo"
 env = "prod"
 application_name = "terraform-eks-demo-infra"
-app_name = "terraform-eks-demo-infra"
+app_name = "terraform-ecs-demo-infra"
 
 ########################################
 ## Terraform State S3 Bucket

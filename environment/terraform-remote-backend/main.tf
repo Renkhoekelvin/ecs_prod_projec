@@ -45,7 +45,7 @@ module "dynamodb_terraform_state_lock" {
   hash_key       = var.hash_key
   attribute_name = var.attribute_name
   attribute_type = var.attribute_type
-  sse_enabled    = var.sse_enable
+  sse_enabled    = var.sse_enabled
   tags           = var.tags
 }
 
